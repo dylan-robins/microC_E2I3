@@ -1,0 +1,25 @@
+#!/bin/bash
+
+SCRIPTDIR=$(dirname $(realpath $0))
+
+OPENOCD=/opt/openocd/bin/openocd
+
+usage () {
+    echo -e Usage:
+    echo -e \\t$0 '<program>.elf' 
+}
+
+if [ $# != 1 ]; then
+    usage
+    exit 1
+fi
+
+ELF=$(realpath $1)
+TMP=$(mktemp /tmp/XXXXXXXX.elf)
+
+cp "$ELF" "$TMP"
+"$OPENOCD" -f board/st_nucleo_f4.cfg -c "program \"$TMP\" verify reset exit"  2>&1 |egrep '[*][*]'
+EXITCODE=${PIPESTATUS[0]}
+rm "$TMP"
+
+exit $EXITCODE

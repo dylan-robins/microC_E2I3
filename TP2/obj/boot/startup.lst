@@ -1,0 +1,53 @@
+   1              	# 1 "src/boot/startup.S"
+   1              	  .syntax unified 
+   1              	...
+   0              	
+   0              	
+   2              		
+   3              	  .section boot , "a"
+   4              	
+   5              	/* _reset values for SP, PC */
+   6              	
+   7 0000 00000000 	  .word __stack
+   8 0004 00000000 	  .word _start
+   9              	
+  10              	  .text
+  11              	
+  12              	  .globl hardware_init_hook 
+  13              	  .thumb_func
+  14              	/* we copy data section from rom to ram */
+  15              	
+  16              	hardware_init_hook:
+  17 0000 0FB5     	   push {r0,r1,r2,r3,lr}	
+  18 0002 0548     	   ldr r0,=__data_start__
+  19 0004 0549     	   ldr r1,=__data_load__
+  20 0006 064A     	   ldr r2,=__data_end__
+  21 0008 A2EB0002 	   sub r2,r2,r0
+  22 000c FFF7FEFF 	   bl memcpy
+  23 0010 0FBD     	   pop {r0,r1,r2,r3,pc}
+  24              	
+  25              	  .text
+  26              		
+  27              	  .globl _exit 
+  28              	  .thumb_func
+  29              	   /* we loop forever */
+  30              	_exit:
+  31 0012 FFF7FEBF 	   b _exit
+  31      00000000 
+  31      00000000 
+  31      00000000 
+  31      0000
+DEFINED SYMBOLS
+  src/boot/startup.S:16     .text:0000000000000000 hardware_init_hook
+  src/boot/startup.S:17     .text:0000000000000000 $t
+  src/boot/startup.S:30     .text:0000000000000012 _exit
+  src/boot/startup.S:31     .text:0000000000000016 $d
+  src/boot/startup.S:31     .text:0000000000000018 $d
+
+UNDEFINED SYMBOLS
+__stack
+_start
+__data_start__
+__data_load__
+__data_end__
+memcpy

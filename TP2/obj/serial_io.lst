@@ -1,0 +1,148 @@
+   1              	# 1 "src/serial_io.S"
+   1              		.syntax unified
+   1              	...
+   0              	
+   0              	
+   2              	
+   3              		.text
+   4              	
+   5              		.globl init_USART2
+   6              	
+   7              	init_USART2:
+   8 0000 1DB5     		push {r0, r2, r3, r4, lr}
+   9              	
+  10              		/* Enable USART2 on APB1 */
+  11              		/* RCC.APB1EN = (1 << 17) */
+  12              		/* RCC.APB1LPENR = (1 << 17) */
+  13 0002 2A4B     		ldr r3, =RCC
+  14 0004 1A6C     		ldr r2, [r3,0x40]
+  15 0006 42F40032 		orr r2, r2, #0x20000
+  16 000a 1A64     		str r2, [r3,0x40]
+  17 000c 1A6E     		ldr r2, [r3,0x60]
+  18 000e 42F40032 		orr r2, r2, #0x20000
+  19 0012 1A66     		str r2, [r3,0x60]	
+  20              	
+  21              		/* Configuration of baudrate */	
+  22              		/* FPCLK=24MHz, OVER8=0 for oversampling of 16*/
+  23              		/* 9600 bauds, 156,25 to be programmed in USART_BRR */
+  24 0014 264B     		ldr r3, =USART2	
+  25              		/* ldr r4, =0x09C4 */	/* FPCLK = 24 Mhz */
+  26              		/* ldr r4, =0x1117 */	/* FPCLK = 42 Mhz */
+  27 0016 B0F5E13F 		cmp r0, #115200
+  28 001a 02D0     		beq L115200
+  29              	
+  30 001c 40F28364 	L9600:	ldr r4, =0x0683	/* FPCLK = 16 Mhz */
+  31 0020 01E0     		b  LconfBRR
+  32              	
+  33              	L115200:
+  34 0022 4FF08B04 		ldr r4, =0x008B	/* FPCLK = 16 Mhz */
+  35              	
+  36              	LconfBRR:
+  37 0026 9C60     		str r4, [r3,0x08]
+  38              	
+  39              		/* Configure CR3 : SCEN=0, IREN=0, HDSEL=0 */
+  40 0028 5A69     		ldr r2, [r3,0x14]
+  41 002a 40F6DD74 		ldr r4, =0xFDD
+  42 002e 02EA0402 		and r2, r2, r4
+  43 0032 5A61     		str r2, [r3,0x14]
+  44              	
+  45              		/* Configure CR2 : LINEN=0, STOP=0, CLKEN=0 */
+  46 0034 1A69     		ldr r2, [r3,0x10]
+  47 0036 02F0FF02 		and r2, r2, #0xFF
+  48 003a 1A61     		str r2, [r3,0x10]
+  49              	
+  50              		/* Configure CR1 : USART enable, no parity, 8 bits */
+  51              		/* RE=1, TE=1, PCE=0, M=0, OVER8=0 */
+  52 003c DA68     		ldr r2, [r3,0x0C]
+  53 003e 46F6FF34 		ldr r4, =0x6BFF
+  54 0042 02EA0402 		and r2, r2, r4
+  55 0046 42F20C04 		ldr r4, =0x200C
+  56 004a 42EA0402 		orr r2, r2, r4
+  57 004e DA60     		str r2, [r3,0x0C]
+  58              	
+  59 0050 1DBD     		pop {r0, r2, r3, r4, pc}
+  60              	
+  61              	
+  62              		.globl init_USART2_GPIOA
+  63              	
+  64              	init_USART2_GPIOA:
+  65 0052 0CB5     		push {r2, r3, lr}
+  66              		/* Enable GPIOA - deja fait dans le main */
+  67              		/* Enable GPIOA - RCC.AHB1ENR <- 0x01 */
+  68              		/* Reset GPIOA - RCC.AHB1ENR <- 0x01 */
+  69 0054 154B     		ldr r3, =RCC
+  70 0056 1A6B     		ldr r2, [r3,0x30]	
+  71 0058 42F00102 		orr r2, r2, #1
+  72 005c 1A63     		str r2, [r3,0x30]
+  73 005e 1A6D     		ldr r2, [r3,0x50]	
+  74 0060 42F00102 		orr r2, r2, #1
+  75 0064 1A65     		str r2, [r3,0x50]
+  76              	
+  77              		/* Enable PA2 & PA3 alternate function */
+  78 0066 134B     		ldr r3, =GPIOA
+  79 0068 1A6A     		ldr r2, [r3,0x20]
+  80 006a 22F47F42 		bic r2, r2, #0xFF00
+  81 006e 42F4EE42 		orr r2, r2, #0x7700
+  82 0072 1A62     		str r2, [r3,0x20]	/* 0b0111 for AFRL2 & AFRL3 - AF7 */
+  83              	
+  84              		/* Mode register as Alternate Function */
+  85 0074 1A68     		ldr r2, [r3, 0x0]
+  86 0076 22F0F002 		bic r2, r2, #0xF0
+  87 007a 42F0A002 		orr r2, r2, #0xA0
+  88 007e 1A60     		str r2, [r3,0x0]	/* MODER2 = MODER3 = 0b10 */
+  89              	
+  90 0080 0CBD     		pop {r2, r3, pc}
+  91              	
+  92              	
+  93              	
+  94              	
+  95              		.globl _putch
+  96              	
+  97              	_putch:
+  98 0082 0DB5     		push {r0, r2, r3, lr}
+  99 0084 0A4B     		ldr r3, =USART2	
+ 100              	
+ 101 0086 1A68     	Lputc:	ldr r2, [r3,#0]
+ 102 0088 02F08002 		and r2, r2, #0x80	/* test of TXNE */
+ 103 008c 002A     		cmp r2, #0		
+ 104 008e FAD0     		beq Lputc		/* polling until TXNE bit = 1 */
+ 105 0090 00F0FF00 		and r0, r0, #0xFF
+ 106 0094 5860     		str r0, [r3,#4]
+ 107              	
+ 108 0096 0DBD     		pop {r0, r2, r3, pc}
+ 109              		
+ 110              		
+ 111              		.globl _getch
+ 112              	
+ 113              	_getch:
+ 114 0098 0CB5     		push {r2, r3, lr}
+ 115 009a 054B     		ldr r3, =USART2	
+ 116              	
+ 117 009c 1A68     	Lgetc:	ldr r2, [r3,#0]
+ 118 009e 02F02002 		and r2, r2, #(1<<5)	/* test of RXNE */
+ 119 00a2 002A     		cmp r2, #0		
+ 120 00a4 FAD0     		beq Lgetc		/* polling until RXNE bit = 1 */
+ 121 00a6 5868     		ldr r0, [r3,#4]
+ 122              	
+ 123 00a8 0CBD0000 		pop {r2, r3, pc}
+ 123      00000000 
+ 123      00000000 
+ 123      00000000 
+DEFINED SYMBOLS
+     src/serial_io.S:7      .text:0000000000000000 init_USART2
+     src/serial_io.S:8      .text:0000000000000000 $t
+     src/serial_io.S:33     .text:0000000000000022 L115200
+     src/serial_io.S:30     .text:000000000000001c L9600
+     src/serial_io.S:36     .text:0000000000000026 LconfBRR
+     src/serial_io.S:64     .text:0000000000000052 init_USART2_GPIOA
+     src/serial_io.S:97     .text:0000000000000082 _putch
+     src/serial_io.S:101    .text:0000000000000086 Lputc
+     src/serial_io.S:113    .text:0000000000000098 _getch
+     src/serial_io.S:117    .text:000000000000009c Lgetc
+     src/serial_io.S:123    .text:00000000000000aa $d
+     src/serial_io.S:123    .text:00000000000000ac $d
+
+UNDEFINED SYMBOLS
+RCC
+USART2
+GPIOA

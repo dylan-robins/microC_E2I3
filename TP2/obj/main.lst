@@ -1,0 +1,218 @@
+   1              	# 1 "src/main.S"
+   1              		.syntax unified
+   1              	...
+   0              	
+   0              	
+   2              	
+   3              		.data
+   4              	tabmois:
+   5 0000 30000000 		.word m1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12
+   5      38000000 
+   5      41000000 
+   5      46000000 
+   5      4C000000 
+   6              	m1:
+   7 0030 4A616E76 		.string "Janvier"
+   7      69657200 
+   8              	m2:
+   9 0038 46C3A976 		.string "Février"
+   9      72696572 
+   9      00
+  10              	m3:
+  11 0041 4D617273 		.string "Mars"
+  11      00
+  12              	m4:
+  13 0046 41767269 		.string "Avril"
+  13      6C00
+  14              	m5:
+  15 004c 4D616900 		.string "Mai"
+  16              	m6:
+  17 0050 4A75696E 		.string "Juin"
+  17      00
+  18              	m7:
+  19 0055 4A75696C 		.string "Juillet"
+  19      6C657400 
+  20              	m8:
+  21 005d 416FC3BB 		.string "Août"
+  21      7400
+  22              	m9:
+  23 0063 53657074 		.string "Septembre"
+  23      656D6272 
+  23      6500
+  24              	m10:
+  25 006d 4F63746F 		.string "Octobre"
+  25      62726500 
+  26              	m11:
+  27 0075 4E6F7665 		.string "Novembre"
+  27      6D627265 
+  27      00
+  28              	m12:
+  29 007e 44C3A963 		.string "Décembre"
+  29      656D6272 
+  29      6500
+  30 0088 00000000 		.align 4
+  30      00000000 
+  31              	dest:
+  32 0090 00000000 		.space 20
+  32      00000000 
+  32      00000000 
+  32      00000000 
+  32      00000000 
+  33              	
+  34              	prompt:
+  35 00a4 4E756D65 	    .string "Numero du mois? (1-12)\n\r>"
+  35      726F2064 
+  35      75206D6F 
+  35      69733F20 
+  35      28312D31 
+  36              	err:
+  37 00be 45727265 	    .string "Erreur"
+  37      757200
+  38              	
+  39              		.text
+  40              	
+  41              		.globl main
+  42              		.thumb_func
+  43              	
+  44              	// prend une adresse de str dans r0 et l'affiche avec _putch
+  45              	_puts:
+  46 0000 0EB5     	    push    {r1, r2, r3, lr}    // sauver les registres ecrases
+  47              	
+  48 0002 0346     	    mov     r3, r0              // ptr chaine dans r3
+  49 0004 4FF00002 	    mov     r2, #0              // i dans r2
+  50              	bcl_pts:
+  51 0008 985C     	    ldrb    r0, [r3, r2]        // charger chaine[i] dans r0
+  52 000a 0028     	    cmp     r0, #0              // si fin de chaine finir
+  53 000c 04D0     	    beq     end_pts
+  54              	
+  55 000e FFF7FEFF 	    bl      _putch              // sinon afficher
+  56 0012 02F10102 	    add     r2, #1              // i++
+  57 0016 F7E7     	    bal     bcl_pts             // boucler
+  58              	
+  59              	end_pts:
+  60 0018 BDE80E40 	    pop     {r1, r2, r3, lr}    // restaurer les registres
+  61 001c 7047     	    bx      lr                  // return
+  62              	
+  63              	_getint:
+  64 001e 1EB5     	    push    {r1, r2, r3, r4, lr}
+  65              	
+  66              	    // lire un 1e caractere
+  67 0020 FFF7FEFF 	    bl      _getch
+  68 0024 FFF7FEFF 	    bl      _putch
+  69 0028 0D28     	    cmp     r0, #'\r'
+  70 002a 35D0     	    beq     fail                // si fin de chaine, erreur
+  71 002c 0346     	    mov     r3, r0              // stockage temporaire
+  72              	
+  73              	    // lire un 2e caractere
+  74 002e FFF7FEFF 	    bl      _getch
+  75 0032 FFF7FEFF 	    bl      _putch
+  76 0036 0D28     	    cmp     r0, #'\r'
+  77 0038 10D0     	    beq     un_chiffre          //si fin de chqinem ! seul char
+  78 003a 0146     	    mov     r1, r0              // stockage temporaire
+  79              	
+  80              	    // lire un 2e caractere
+  81 003c FFF7FEFF 	    bl      _getch
+  82 0040 FFF7FEFF 	    bl      _putch
+  83 0044 0D28     	    cmp     r0, #'\r'
+  84 0046 27D1     	    bne     fail                // si fin de chaine (3 chiffres), erreur
+  85              	
+  86              	deux_chiffres:
+  87 0048 A1F13001 	    sub     r1, #'0'
+  88 004c A3F13003 	    sub     r3, #'0'
+  89              	
+  90 0050 4FF00A04 	    mov     r4, #10
+  91 0054 03FB04F0 	    mul     r0, r3, r4
+  92 0058 0844     	    add     r0, r1
+  93 005a 01E0     	    bal fin_geti
+  94              	
+  95              	un_chiffre:
+  96 005c A3F13000 	    sub     r0, r3, #'0'
+  97              	    
+  98              	fin_geti:
+  99              	    // return
+ 100 0060 BDE81E40 	    pop     {r1, r2, r3, r4, lr}
+ 101 0064 7047     	    bx      lr
+ 102              	
+ 103              	
+ 104              	main:
+ 105 0066 00B5     		push    {lr}
+ 106              	/* Insert program here */
+ 107 0068 FFF7FEFF 	    bl      init_USART2
+ 108              	
+ 109 006c FFF7FEFF 	    bl      init_USART2_GPIOA
+ 110              	
+ 111 0070 1148     	    ldr     r0, =prompt
+ 112 0072 FFF7C5FF 	    bl      _puts
+ 113              	
+ 114 0076 FFF7D2FF 	    bl      _getint
+ 115              	
+ 116 007a 104A     	    ldr     r2, =tabmois    // tableau de mois
+ 117              	    
+ 118 007c 0128     	    cmp     r0, #1
+ 119 007e 0BDB     	    blt     fail             //si <= 0 fail
+ 120 0080 0C28     	    cmp     r0, #12
+ 121 0082 09DC     	    bgt     fail             // si > 12 fail
+ 122              	
+ 123 0084 A0F10100 	    sub     r0, #1          // conversion numero mois -> rang du tableau
+ 124 0088 4FF00401 	    mov     r1, #4
+ 125 008c 01FB00F0 	    mul     r0, r1          //*4 car sizeof(word) = 4
+ 126 0090 1058     	    ldr     r0, [r2, r0]    // chaine nom du mois
+ 127              	
+ 128 0092 FFF7B5FF 	    bl      _puts
+ 129              	
+ 130 0096 02E0     	    bal end
+ 131              	
+ 132              	fail:
+ 133 0098 0948     	    ldr     r0, =err
+ 134 009a FFF7B1FF 	    bl      _puts
+ 135              	
+ 136              	end:
+ 137 009e 4FF00A00 	    mov r0, #'\n'
+ 138 00a2 FFF7FEFF 	    bl _putch
+ 139 00a6 4FF00D00 	    mov r0, #'\r'
+ 140 00aa FFF7FEFF 	    bl _putch
+ 141              	
+ 142 00ae FFF7FEBF 	    bal     main
+ 143              	
+ 144              	/* return 0; */	 
+ 145 00b2 4FF00000 		mov     r0,#0  
+ 146 00b6 00BDA400 		pop     {pc}
+ 146      00000000 
+ 146      0000BE00 
+ 146      0000
+DEFINED SYMBOLS
+          src/main.S:4      .data:0000000000000000 tabmois
+          src/main.S:6      .data:0000000000000030 m1
+          src/main.S:8      .data:0000000000000038 m2
+          src/main.S:10     .data:0000000000000041 m3
+          src/main.S:12     .data:0000000000000046 m4
+          src/main.S:14     .data:000000000000004c m5
+          src/main.S:16     .data:0000000000000050 m6
+          src/main.S:18     .data:0000000000000055 m7
+          src/main.S:20     .data:000000000000005d m8
+          src/main.S:22     .data:0000000000000063 m9
+          src/main.S:24     .data:000000000000006d m10
+          src/main.S:26     .data:0000000000000075 m11
+          src/main.S:28     .data:000000000000007e m12
+          src/main.S:30     .data:0000000000000088 $d
+          src/main.S:31     .data:0000000000000090 dest
+          src/main.S:34     .data:00000000000000a4 prompt
+          src/main.S:36     .data:00000000000000be err
+          src/main.S:104    .text:0000000000000066 main
+          src/main.S:45     .text:0000000000000000 _puts
+          src/main.S:46     .text:0000000000000000 $t
+          src/main.S:50     .text:0000000000000008 bcl_pts
+          src/main.S:59     .text:0000000000000018 end_pts
+          src/main.S:63     .text:000000000000001e _getint
+          src/main.S:132    .text:0000000000000098 fail
+          src/main.S:95     .text:000000000000005c un_chiffre
+          src/main.S:86     .text:0000000000000048 deux_chiffres
+          src/main.S:98     .text:0000000000000060 fin_geti
+          src/main.S:136    .text:000000000000009e end
+          src/main.S:146    .text:00000000000000b8 $d
+
+UNDEFINED SYMBOLS
+_putch
+_getch
+init_USART2
+init_USART2_GPIOA

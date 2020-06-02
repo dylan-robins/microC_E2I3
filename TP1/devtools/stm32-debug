@@ -1,0 +1,24 @@
+#!/bin/bash
+
+SCRIPTDIR=$(dirname $(realpath $0))
+
+GDB=arm-none-eabi-gdb
+
+GDBDEBUGSCRIPT=$SCRIPTDIR/debug-script.gdb
+
+NEWLIBSRCDIR=$(arm-none-eabi-objdump -Wi /usr/lib/arm-none-eabi/newlib/armv7e-m/fpu/crt0.o | grep DW_AT_comp_dir | awk '{ print $4 }' | sed 's/\/build\/arm-none-eabi\/.*//')
+
+usage () {
+    echo -e Usage:
+    echo -e \\t$0 '<program>.elf' 
+}
+
+if [ $# != 1 ]; then
+    usage
+    exit 1
+fi
+
+ELF=$(realpath $1)
+
+ddd --debugger "$GDB  -ex \"set substitute-path \\\"$NEWLIBSRCDIR\\\" \\\"/opt/newlib-src\\\"\" -x \"$GDBDEBUGSCRIPT\""  $ELF
+

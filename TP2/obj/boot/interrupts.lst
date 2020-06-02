@@ -1,0 +1,239 @@
+   1              	# 1 "src/boot/interrupts.S"
+   1              	
+   1              	...
+   0              	
+   0              	
+   2              	.syntax unified
+   3              		
+   4              	/* We define interrupt handlers as weak aliases to Default_Handler */
+   5              	
+   6              	  .globl Default_Handler	
+   7              	  .type Default_Handler,%function	
+   8              	Default_Handler:
+   9 0000 FEE7     	  b .
+  10              	  .size Default_Handler, . - Default_Handler
+  11              	
+  12              	  .macro Interrupt_Handler source
+  13              	  .weak \source\()_Handler
+  14              	  .thumb_set \source\()_Handler,Default_Handler
+  15              	  .word \source\()_Handler
+  16              	  .endm
+  17              	
+  18              	.section interrupt_vector, "a"
+  19              	
+  20              	/* ARM Cortex-M4 Interrupts */
+  21              	
+  22 0000 00000000 	Interrupt_Handler NMI
+  23 0004 00000000 	Interrupt_Handler HardFault
+  24 0008 00000000 	Interrupt_Handler MemManage 
+  25 000c 00000000 	Interrupt_Handler BusFault
+  26 0010 00000000 	Interrupt_Handler UsageFault
+  27 0014 00000000 	  .word 0
+  28 0018 00000000 	  .word 0
+  29 001c 00000000 	  .word 0
+  30 0020 00000000 	  .word 0
+  31 0024 00000000 	Interrupt_Handler SVCall
+  32 0028 00000000 	Interrupt_Handler Debug_Monitor
+  33 002c 00000000 	  .word 0
+  34 0030 00000000 	Interrupt_Handler PendSV
+  35 0034 00000000 	Interrupt_Handler SysTick
+  36              	 
+  37              	/* STM32F446 specific interrupts */
+  38              	 
+  39 0038 00000000 	Interrupt_Handler WWDG
+  40 003c 00000000 	Interrupt_Handler PVD
+  41 0040 00000000 	Interrupt_Handler TAMP_STAMP
+  42 0044 00000000 	Interrupt_Handler RTC_WKUP
+  43 0048 00000000 	Interrupt_Handler FLASH
+  44 004c 00000000 	Interrupt_Handler RCC
+  45 0050 00000000 	Interrupt_Handler EXTI0
+  46 0054 00000000 	Interrupt_Handler EXTI1
+  47 0058 00000000 	Interrupt_Handler EXTI2
+  48 005c 00000000 	Interrupt_Handler EXTI3
+  49 0060 00000000 	Interrupt_Handler EXTI4
+  50 0064 00000000 	Interrupt_Handler DMA1_Stream0
+  51 0068 00000000 	Interrupt_Handler DMA1_Stream1
+  52 006c 00000000 	Interrupt_Handler DMA1_Stream2
+  53 0070 00000000 	Interrupt_Handler DMA1_Stream3
+  54 0074 00000000 	Interrupt_Handler DMA1_Stream4
+  55 0078 00000000 	Interrupt_Handler DMA1_Stream5
+  56 007c 00000000 	Interrupt_Handler DMA1_Stream6
+  57 0080 00000000 	Interrupt_Handler ADC
+  58 0084 00000000 	Interrupt_Handler CAN1_TX
+  59 0088 00000000 	Interrupt_Handler CAN1_RX0
+  60 008c 00000000 	Interrupt_Handler CAN1_RX1
+  61 0090 00000000 	Interrupt_Handler CAN1_SCE
+  62 0094 00000000 	Interrupt_Handler EXTI9_5
+  63 0098 00000000 	Interrupt_Handler TIM1_BRK_TIM9
+  64 009c 00000000 	Interrupt_Handler TIM1_UP_TIM10
+  65 00a0 00000000 	Interrupt_Handler TIM1_TRG_COM_TIM11
+  66 00a4 00000000 	Interrupt_Handler TIM1_CC
+  67 00a8 00000000 	Interrupt_Handler TIM2
+  68 00ac 00000000 	Interrupt_Handler TIM3
+  69 00b0 00000000 	Interrupt_Handler TIM4
+  70 00b4 00000000 	Interrupt_Handler I2C1_EV
+  71 00b8 00000000 	Interrupt_Handler I2C1_ER
+  72 00bc 00000000 	Interrupt_Handler I2C2_EV
+  73 00c0 00000000 	Interrupt_Handler I2C2_ER
+  74 00c4 00000000 	Interrupt_Handler SPI1
+  75 00c8 00000000 	Interrupt_Handler SPI2
+  76 00cc 00000000 	Interrupt_Handler USART1
+  77 00d0 00000000 	Interrupt_Handler USART2
+  78 00d4 00000000 	Interrupt_Handler USART3
+  79 00d8 00000000 	Interrupt_Handler EXTI15_10
+  80 00dc 00000000 	Interrupt_Handler RTC_Alarm
+  81 00e0 00000000 	Interrupt_Handler OTG_FS_WKUP
+  82 00e4 00000000 	Interrupt_Handler TIM8_BRK_TIM12
+  83 00e8 00000000 	Interrupt_Handler TIM8_UP_TIM13
+  84 00ec 00000000 	Interrupt_Handler TIM8_TRG_COM_TIM14
+  85 00f0 00000000 	Interrupt_Handler TIM8_CC
+  86 00f4 00000000 	Interrupt_Handler DMA1_Stream7
+  87 00f8 00000000 	Interrupt_Handler FMC
+  88 00fc 00000000 	Interrupt_Handler SDIO
+  89 0100 00000000 	Interrupt_Handler TIM5
+  90 0104 00000000 	Interrupt_Handler SPI3
+  91 0108 00000000 	Interrupt_Handler UART4
+  92 010c 00000000 	Interrupt_Handler UART5
+  93 0110 00000000 	Interrupt_Handler TIM6_DAC
+  94 0114 00000000 	Interrupt_Handler TIM7
+  95 0118 00000000 	Interrupt_Handler DMA2_Stream0
+  96 011c 00000000 	Interrupt_Handler DMA2_Stream1
+  97 0120 00000000 	Interrupt_Handler DMA2_Stream2
+  98 0124 00000000 	Interrupt_Handler DMA2_Stream3
+  99 0128 00000000 	Interrupt_Handler DMA2_Stream4
+ 100 012c 00000000 	  .word 0
+ 101 0130 00000000 	  .word 0
+ 102 0134 00000000 	Interrupt_Handler CAN2_TX
+ 103 0138 00000000 	Interrupt_Handler CAN2_RX0
+ 104 013c 00000000 	Interrupt_Handler CAN2_RX1
+ 105 0140 00000000 	Interrupt_Handler CAN2_SCE
+ 106 0144 00000000 	Interrupt_Handler OTG_FS
+ 107 0148 00000000 	Interrupt_Handler DMA2_Stream5
+ 108 014c 00000000 	Interrupt_Handler DMA2_Stream6
+ 109 0150 00000000 	Interrupt_Handler DMA2_Stream7
+ 110 0154 00000000 	Interrupt_Handler USART6
+ 111 0158 00000000 	Interrupt_Handler I2C3_EV
+ 112 015c 00000000 	Interrupt_Handler I2C3_ER
+ 113 0160 00000000 	Interrupt_Handler OTG_HS_EP1_OUT
+ 114 0164 00000000 	Interrupt_Handler OTG_HS_EP1_IN
+ 115 0168 00000000 	Interrupt_Handler OTG_HS_WKUP
+ 116 016c 00000000 	Interrupt_Handler OTG_HS
+ 117 0170 00000000 	Interrupt_Handler DCMI
+ 118 0174 00000000 	  .word 0
+ 119 0178 00000000 	  .word 0
+ 120 017c 00000000 	Interrupt_Handler FPU
+ 121 0180 00000000 	  .word 0
+ 122 0184 00000000 	  .word 0
+ 123 0188 00000000 	Interrupt_Handler SPI4
+ 124 018c 00000000 	  .word 0
+ 125 0190 00000000 	  .word 0
+ 126 0194 00000000 	Interrupt_Handler SAI1
+ 127 0198 00000000 	  .word 0
+ 128 019c 00000000 	  .word 0
+ 129 01a0 00000000 	  .word 0
+ 130 01a4 00000000 	Interrupt_Handler SAI2
+ 131 01a8 00000000 	Interrupt_Handler QuadSPI
+ 132 01ac 00000000 	Interrupt_Handler HDMI_CEC
+ 133 01b0 00000000 	Interrupt_Handler SPDIF_Rx
+ 134 01b4 00000000 	Interrupt_Handler FMPI2C1
+ 135 01b8 00000000 	Interrupt_Handler FMPI2C1_error
+DEFINED SYMBOLS
+src/boot/interrupts.S:8      .text:0000000000000000 Default_Handler
+src/boot/interrupts.S:9      .text:0000000000000000 $t
+src/boot/interrupts.S:8      .text:0000000000000000 NMI_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 HardFault_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 MemManage_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 BusFault_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 UsageFault_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 SVCall_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 Debug_Monitor_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 PendSV_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 SysTick_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 WWDG_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 PVD_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 TAMP_STAMP_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 RTC_WKUP_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 FLASH_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 RCC_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 EXTI0_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 EXTI1_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 EXTI2_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 EXTI3_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 EXTI4_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 DMA1_Stream0_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 DMA1_Stream1_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 DMA1_Stream2_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 DMA1_Stream3_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 DMA1_Stream4_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 DMA1_Stream5_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 DMA1_Stream6_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 ADC_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 CAN1_TX_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 CAN1_RX0_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 CAN1_RX1_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 CAN1_SCE_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 EXTI9_5_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 TIM1_BRK_TIM9_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 TIM1_UP_TIM10_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 TIM1_TRG_COM_TIM11_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 TIM1_CC_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 TIM2_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 TIM3_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 TIM4_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 I2C1_EV_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 I2C1_ER_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 I2C2_EV_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 I2C2_ER_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 SPI1_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 SPI2_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 USART1_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 USART2_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 USART3_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 EXTI15_10_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 RTC_Alarm_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 OTG_FS_WKUP_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 TIM8_BRK_TIM12_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 TIM8_UP_TIM13_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 TIM8_TRG_COM_TIM14_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 TIM8_CC_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 DMA1_Stream7_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 FMC_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 SDIO_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 TIM5_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 SPI3_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 UART4_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 UART5_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 TIM6_DAC_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 TIM7_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 DMA2_Stream0_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 DMA2_Stream1_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 DMA2_Stream2_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 DMA2_Stream3_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 DMA2_Stream4_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 CAN2_TX_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 CAN2_RX0_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 CAN2_RX1_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 CAN2_SCE_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 OTG_FS_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 DMA2_Stream5_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 DMA2_Stream6_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 DMA2_Stream7_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 USART6_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 I2C3_EV_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 I2C3_ER_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 OTG_HS_EP1_OUT_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 OTG_HS_EP1_IN_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 OTG_HS_WKUP_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 OTG_HS_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 DCMI_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 FPU_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 SPI4_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 SAI1_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 SAI2_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 QuadSPI_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 HDMI_CEC_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 SPDIF_Rx_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 FMPI2C1_Handler
+src/boot/interrupts.S:8      .text:0000000000000000 FMPI2C1_error_Handler
+
+NO UNDEFINED SYMBOLS

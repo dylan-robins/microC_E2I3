@@ -1,0 +1,30 @@
+### This file may be edited to adapt to your project ###
+
+# Base name for the main program
+PROGNAME = main
+
+# List of assembly source (.S) files
+ASMS = src/boot/startup.S src/boot/interrupts.S src/main.S src/serial_io.S
+
+# List of assembly includes (optional)
+ASMDEPS =
+
+# List of C source files (.c) 
+SRCS =
+
+# List of C header files (optional)
+CDEPS =
+
+# List of C++ source files (.cpp)
+CPPSRCS = 
+
+# List of C++ deps (optional)
+CPPDEPS =
+
+# C source file where CRC info will be stored
+CRCSRC =
+#CRCSRC = src/boot/crc_info.c
+
+# Name of linker program (change gcc to g++ if linking C++ files)
+LINKER = gcc 
+#LINKER = g++
