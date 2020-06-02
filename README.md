@@ -1,4 +1,4 @@
-# Programmation - E2I3
+# Microcontroller Programming - E2I3
 
 ## What is this?
 
@@ -10,4 +10,4 @@ This is a repository containing all the programs I’ve written for my microcont
 
 ## License
 
-This project is licensed under the WTFPL licence - see the [LICENSE](https://github.com/dylan-robins/programmation-E2I3/blob/master/LICENCE) file for details.
+This project is licensed under the WTFPL licence - see the [LICENSE](https://github.com/dylan-robins/microC_s1/blob/master/LICENCE) file for details.
