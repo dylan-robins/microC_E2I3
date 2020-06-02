@@ -10,4 +10,4 @@ This is a repository containing all the programs I’ve written for my microcont
 
 ## License
 
-This project is licensed under the WTFPL licence - see the [LICENSE](https://github.com/dylan-robins/microC_s1/blob/master/LICENCE) file for details.
+This project is licensed under the WTFPL licence - see the [LICENSE](https://github.com/dylan-robins/microC_E2I3/blob/master/LICENCE) file for details.
